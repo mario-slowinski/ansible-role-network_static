@@ -1,0 +1,40 @@
+- name: "Set static network configuration in ifcfg file"
+  tags: network_static-ifcfg
+  lineinfile:
+    path: "/etc/sysconfig/network-scripts/ifcfg-{{ item[0]['name'] }}"
+    regexp: "{{ item[1]['regexp'] }}"
+    line: "{{ item[1]['regexp'] + item[1]['line'] | default(item[0][item[1]['var']]) }}"
+  loop: "{{ network_static_interfaces | product(network_static_lines) | list }}"
+  notify:
+  - "Reload nmcli configuration"
+  - "Activate nmcli connection"
+
+- name: "Set static resolv configuration in ifcfg file"
+  tags: network_static-ifcfg
+  lineinfile:
+    path: "/etc/sysconfig/network-scripts/ifcfg-{{ item[0]['name'] }}"
+    regexp: "DNS{{ ansible_loop.index }}="
+    line: "DNS{{ ansible_loop.index }}={{ item[1] }}"
+  loop: "{{ network_static_interfaces | subelements('dns') | list }}"
+  loop_control:
+    extended: yes
+  notify:
+  - "Reload nmcli configuration"
+  - "Activate nmcli connection"
+
+- name: "Configure hostname"
+  tags: network_static-hostname
+  lineinfile:
+   path: /etc/hostname
+   regexp: '.*'
+   line: "{{ inventory_hostname }}"
+   create: yes
+
+- name: "Set hostname in /etc/hosts"
+  tags: network_static-hosts
+  lineinfile:
+   path: /etc/hosts
+   regexp: '.*{{ inventory_hostname_short }}'
+   line: "{{ network_static_interfaces[0]['address'] }}\t{{ inventory_hostname }}\t{{ inventory_hostname_short }}"
+   insertafter: '::1.*'
+   create: yes

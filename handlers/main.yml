@@ -1,0 +1,7 @@
+- name: "Reload nmcli configuration"
+  command: "nmcli c reload"
+
+- name: "Activate nmcli connection"
+  command: "nmcli c up {{ item['name'] }}"
+  loop: "{{ network_static_interfaces }}"
+

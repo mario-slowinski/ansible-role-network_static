@@ -1,0 +1,8 @@
+network_static_interfaces:
+- name: "{{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | selectattr('value.ipv4.address', 'equalto', ansible_facts['default_ipv4']['address']) | map(attribute='key') | first }}"
+  device: "{{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | selectattr('value.ipv4.address', 'equalto', ansible_facts['default_ipv4']['address']) | map(attribute='value.device') | first }}"
+  address: "{{ lookup('dig', inventory_hostname) | default(ansible_host)  }}"
+  netmask: "{{ ansible_facts['default_ipv4']['netmask'] }}"
+  gateway: "{{ ansible_facts['default_ipv4']['gateway'] }}"
+  domain: "{{ ansible_facts['domain'] }}"
+  dns: "{{ ansible_facts['dns']['nameservers'] | unique }}"

@@ -1,0 +1,19 @@
+network_static_lines:
+- regexp: "BOOTPROTO="
+  line: "static"
+  var: ''
+- regexp: "ONBOOT="
+  line: "yes"
+  var: ''
+- regexp: "NAME="
+  var: "name"
+- regexp: "DEVICE="
+  var: "device"
+- regexp: "IPADDR="
+  var: "address"
+- regexp: "NETMASK="
+  var: "netmask"
+- regexp: "GATEWAY="
+  var: "gateway"
+- regexp: "DOMAIN="
+  var: "domain"
